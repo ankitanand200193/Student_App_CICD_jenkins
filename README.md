@@ -7,6 +7,21 @@
 - Dockerized
 - CI/CD ready with Jenkins
 
+## Setup
+
+```
+Create a database and collection in MongoD
+
+Update MONGO_URI in the python code
+
+```
+
+## Postman
+
+
+Enter some data in the database and test with the url
+
+
 ## 🚀 Run Locally
 ```bash
 pip install -r requirements.txt
