@@ -16,6 +16,17 @@ Update MONGO_URI in the python code
 
 ```
 
+## Git Webhook Setup:
+
+| Field            | Value                                                                    |
+| ---------------- | ------------------------------------------------------------------------ |
+| **Payload URL**  | `http://<your-jenkins-url>/github-webhook/`                              |
+| **Content type** | `application/json`                                                       |
+| **Secret**       | *(optional)* Add a secret if you want to secure communication            |
+| **Events**       | Choose “**Just the push event**” (or also enable Pull request if needed) |
+
+You can test the setup by hitting on recent deliveries. 
+
 ## Postman
 
 
