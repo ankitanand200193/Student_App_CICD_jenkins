@@ -2,14 +2,18 @@ from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from bson import ObjectId
 from bson.regex import Regex
+from dotenv import load_dotenv
+import os
+
 
 # Initialize Flask app
 app = Flask(__name__)
 
 # Connect to MongoDB
-client = MongoClient("mongodb+srv://USERNAME:PASSWORD@cluster0.ou9e6.mongodb.net/")  # Replace with your MongoDB URI
+client = MongoClient(os.environ.get("ANKIT_MONGO_URI"))  # Replace with your MongoDB URI
 db = client["ankit_students_db"]  # Database name
 students_collection = db["students"]  # Collection name
+# students_collection = os.environ.get("MONGO_URI")
 
 # Database functions
 def add_student(data):
