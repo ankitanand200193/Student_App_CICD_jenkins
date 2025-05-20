@@ -38,17 +38,22 @@ pipeline {
     }
 
     stage('Run Flask App (Smoke Check)') {
-      steps {
-        sh '''
-          . venv/bin/activate
-          export ANKIT_MONGO_URI=$MONGO_URI
-          nohup python app.py &
-          sleep 5
-          curl --fail http://localhost:5000 || exit 1
-          pkill -f "python app.py"
-        '''
+    steps {
+      sh '''
+        . venv/bin/activate
+        export ANKIT_MONGO_URI=$MONGO_URI
+        pip install -r requirements.txt  # Ensure dotenv and other deps are available
+
+        nohup python app.py > flask.log 2>&1 &
+        sleep 5
+
+        curl --fail http://localhost:5000 || (echo "Flask failed to start:" && cat flask.log && exit 1)
+
+        pkill -f "python app.py"
+       '''
       }
     }
+
 
     stage('Deploy to Staging') {
       when {
