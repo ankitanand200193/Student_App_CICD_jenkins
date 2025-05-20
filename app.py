@@ -41,7 +41,7 @@ def delete_student(student_id):
 # Flask routes
 @app.route('/')
 def home():
-    return "Welcome to the Ankit Student Management System API!", 200
+    return "Welcome to the Student Management System API!", 200
 
 @app.route('/students', methods=['POST'])
 def add():
