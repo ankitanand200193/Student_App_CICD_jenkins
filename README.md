@@ -7,12 +7,14 @@
 - Dockerized
 - CI/CD ready with Jenkins
 
+
+
 ## Setup
 
 ```
 Create a database and collection in MongoD
 
-Update MONGO_URI in the python code
+Update MONGO_URI in the python code once its value stored in .env file
 
 ```
 
@@ -27,10 +29,22 @@ Update MONGO_URI in the python code
 
 You can test the setup by hitting on recent deliveries. 
 
-## Postman
+## Setting the gmail notification:
 
+![gmail_notifiction]()
 
-Enter some data in the database and test with the url
+### To create the password:
+
+* Go to your Google Account: https://myaccount.google.com/
+
+* Enable 2-Step Verification.
+
+* After enabling, go to Security > App Passwords.
+
+* Choose App: Mail and Device: Other (Jenkins).
+
+* Click Generate — you’ll get a 16-character app password.
+
 
 
 ## 🚀 Run Locally
