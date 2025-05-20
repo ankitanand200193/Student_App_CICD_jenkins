@@ -30,7 +30,7 @@ pipeline {
     stage('Test') {
       steps {
         sh '''
-          source venv/bin/activate
+          . venv/bin/activate
           export ANKIT_MONGO_URI=$MONGO_URI
           pytest tests/ || echo "No tests folder found. Skipping tests."
         '''
@@ -40,7 +40,7 @@ pipeline {
     stage('Run Flask App (Smoke Check)') {
       steps {
         sh '''
-          source venv/bin/activate
+          . venv/bin/activate
           export ANKIT_MONGO_URI=$MONGO_URI
           nohup python app.py &
           sleep 5
@@ -63,7 +63,7 @@ pipeline {
 
   post {
     success {
-      mail to: 'XYZ@gmail.com',
+      mail to: '@gmail.com',
            subject: "✅ Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
            body: "The build completed successfully."
     }
