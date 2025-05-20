@@ -27,18 +27,18 @@ pipeline {
                 '''
             }
         }
-        stage('Run Flask App') {
-            steps {
-                sh '''
-                    source venv/bin/activate
-                    export FLASK_APP=app.py
-                    export ANKIT_MONGO_URI=$ANKIT_MONGO_URI
-                    nohup flask run --host=0.0.0.0 --port=5000 &
-                    sleep 5  # Give Flask time to start
-                    curl --fail http://localhost:5000 || exit 1
-                '''
-            }
-        }
+        // stage('Run Flask App') {
+        //     steps {
+        //         sh '''
+        //             source venv/bin/activate
+        //             export FLASK_APP=app.py
+        //             export ANKIT_MONGO_URI=$ANKIT_MONGO_URI
+        //             nohup flask run --host=0.0.0.0 --port=5000 &
+        //             sleep 5  # Give Flask time to start
+        //             curl --fail http://localhost:5000 || exit 1
+        //         '''
+        //     }
+        // }
 
     // stage('Build') {
     //   steps {
@@ -59,16 +59,16 @@ pipeline {
   //     }
   //   }
 
-  //   stage('Deploy to Staging') {
-  //     when {
-  //       expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
-  //     }
-  //     steps {
-  //       echo 'Deploying to staging...'
-  //       // Add your deployment logic here
-  //     }
-  //   }
-  // }
+    stage('Deploy to Staging') {
+      when {
+        expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
+      }
+      steps {
+        echo 'Deploying to staging...'
+        // Add your deployment logic here
+      }
+    }
+  }
 
   post {
     success {
