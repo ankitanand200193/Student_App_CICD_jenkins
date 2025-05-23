@@ -5,9 +5,9 @@ pipeline {
     MONGO_URI = credentials('ANKIT_MONGO_URI') // Injected from Jenkins Credentials
   }
 
-  triggers {
-    githubPush()
-  }
+  // triggers {
+  //   githubPush()
+  // }
 
   stages {
     stage('Checkout') {
