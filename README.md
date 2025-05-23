@@ -12,11 +12,15 @@
 ## Setup
 
 ```
-Create a database and collection in MongoD
+Create a database and collection in MongoDB
 
 Update MONGO_URI in the python code once its value stored in .env file
 
+Create MONGO_URI variable in the  ** Manage Jenkins > Security > Credential > global **
+
 ```
+
+
 
 ## Git Webhook Setup:
 
@@ -53,16 +57,9 @@ pip install -r requirements.txt
 python app.py
 ```
 
-## 🧪 Run Tests
-```bash
-pytest test_app.py
-```
 
-## 🐳 Docker
-```bash
-docker build -t student-api .
-docker run -p 5000:5000 student-api
-```
+
+
 
 ## 🛠️ Jenkins Pipeline
 This project contains a `Jenkinsfile` to automate:
