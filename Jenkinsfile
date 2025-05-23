@@ -54,25 +54,44 @@ pipeline {
     //   }
     // }
 
-    stage('Run Flask App (Smoke Check)') {
-    steps {
-      sh '''
-      . venv/bin/activate
-      export ANKIT_MONGO_URI=$MONGO_URI
-      pip install -r requirements.txt
+  //   stage('Run Flask App (Smoke Check)') {
+  //   steps {
+  //     sh '''
+  //     . venv/bin/activate
+  //     export ANKIT_MONGO_URI=$MONGO_URI
+  //     pip install -r requirements.txt
 
-      nohup python app.py > flask.log 2>&1 &
-      echo $! > flask.pid  # Save PID
-      sleep 5
+  //     nohup python app.py > flask.log 2>&1 &
+  //     echo $! > flask.pid  # Save PID
+  //     sleep 5
 
-      echo "📡 Smoke test: Checking Flask server..."
-      curl --fail http://localhost:5000 || (echo "Flask failed to start:" && cat flask.log && kill $(cat flask.pid) && exit 1)
+  //     echo "📡 Smoke test: Checking Flask server..."
+  //     curl --fail http://localhost:5000 || (echo "Flask failed to start:" && cat flask.log && kill $(cat flask.pid) && exit 1)
 
-      echo "🛑 Shutting down Flask..."
-      kill $(cat flask.pid)
-      '''
-    }
-  }
+  //     echo "🛑 Shutting down Flask..."
+  //     kill $(cat flask.pid)
+  //     '''
+  //   }
+  // }
+          stage('Run Flask App (Smoke Check)') {
+            steps {
+              sh '''
+              . venv/bin/activate
+              export ANKIT_MONGO_URI=$MONGO_URI
+              pip install -r requirements.txt
+
+              nohup python app.py > flask.log 2>&1 &
+              echo $! > flask.pid
+              sleep 5
+
+              echo "📡 Smoke test: Checking Flask server..."
+              curl --fail http://localhost:5000 || (echo "Flask failed to start:" && cat flask.log && kill $(cat flask.pid) && exit 1)
+
+              echo "🛑 Shutting down Flask..."
+              kill $(cat flask.pid) 2>/dev/null || echo "Process already stopped"
+              '''
+            }
+          }
 
 
 
