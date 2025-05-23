@@ -37,42 +37,6 @@ pipeline {
       }
     }
 
-    // stage('Run Flask App (Smoke Check)') {
-    // steps {
-    //   sh '''
-    //     . venv/bin/activate
-    //     export ANKIT_MONGO_URI=$MONGO_URI
-    //     pip install -r requirements.txt  # Ensure dotenv and other deps are available
-
-    //     nohup python app.py > flask.log 2>&1 &
-    //     sleep 5
-
-    //     curl --fail http://localhost:5000 || (echo "Flask failed to start:" && cat flask.log && exit 1)
-
-    //     pkill -f "python app.py"
-    //    '''
-    //   }
-    // }
-
-  //   stage('Run Flask App (Smoke Check)') {
-  //   steps {
-  //     sh '''
-  //     . venv/bin/activate
-  //     export ANKIT_MONGO_URI=$MONGO_URI
-  //     pip install -r requirements.txt
-
-  //     nohup python app.py > flask.log 2>&1 &
-  //     echo $! > flask.pid  # Save PID
-  //     sleep 5
-
-  //     echo "📡 Smoke test: Checking Flask server..."
-  //     curl --fail http://localhost:5000 || (echo "Flask failed to start:" && cat flask.log && kill $(cat flask.pid) && exit 1)
-
-  //     echo "🛑 Shutting down Flask..."
-  //     kill $(cat flask.pid)
-  //     '''
-  //   }
-  // }
           stage('Run Flask App (Smoke Check)') {
             steps {
               sh '''
