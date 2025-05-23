@@ -35,7 +35,7 @@ You can test the setup by hitting on recent deliveries.
 
 ## Setting the gmail notification:
 
-![gmail_notifiction]()
+![gmail_notifiction](
 
 ### To create the password:
 
