@@ -64,11 +64,18 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            cd /home/ubuntu/student_app_staging
-            git pull origin staging
+            cd ***
+            if [ ! -d ".git" ]; then
+              rm -rf * .[^.]*   # remove all files including hidden except '.' and '..'
+              git clone https://github.com/ankitanand200193/Student_App_CICD_jenkins.git .
+              git checkout staging
+            else
+              git pull origin staging
+            fi
             echo "ANKIT_MONGO_URI=***" > .env
             pkill -f "python app.py" || true
             nohup python3 app.py > app.log 2>&1 &
+
 
   deploy-production:
     needs: build-test
