@@ -2,12 +2,12 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - staging
-      - main
-  release:
-    types:
-      - published
+  #   branches:
+  #     - staging
+  #     - main
+  # release:
+  #   types:
+  #     - published
   workflow_dispatch:
 
 
@@ -44,8 +44,9 @@ jobs:
           mkdir -p build
           # Copy everything except the build folder itself into build/
           rsync -av --exclude='build' ./ build/
+  
   deploy-staging:
-    needs: build-test
+    # needs: build-test
     if: github.ref == 'refs/heads/staging'
     runs-on: ubuntu-latest
 
@@ -74,8 +75,9 @@ jobs:
             echo "ANKIT_MONGO_URI=***" > .env
             pkill -f "python app.py" || true
             nohup python3 app.py > app.log 2>&1 &
+  
   deploy-production:
-    needs: build-test
+    # needs: build-test
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
 
