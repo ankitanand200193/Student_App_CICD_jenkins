@@ -64,14 +64,9 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            cd ${{ secrets.APP_DIR_STAGING }}
-            if [ ! -d ".git" ]; then
-              git clone https://github.com/ankitanand200193/Student_App_CICD_jenkins.git .
-              git checkout staging
-            else
-              git pull origin staging
-            fi
-            echo "ANKIT_MONGO_URI=${{ secrets.MONGO_URI }}" > .env
+            cd /home/ubuntu/student_app_staging
+            git pull origin staging
+            echo "ANKIT_MONGO_URI=***" > .env
             pkill -f "python app.py" || true
             nohup python3 app.py > app.log 2>&1 &
 
@@ -93,13 +88,8 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            cd ${{ secrets.APP_DIR_PRODUCTION }}
-            if [ ! -d ".git" ]; then
-              git clone https://github.com/ankitanand200193/Student_App_CICD_jenkins.git .
-              git checkout staging
-            else
-              git pull origin staging
-            fi
-            echo "ANKIT_MONGO_URI=${{ secrets.MONGO_URI }}" > .env
+            cd /home/ubuntu/student_app_staging
+            git pull origin staging
+            echo "ANKIT_MONGO_URI=***" > .env
             pkill -f "python app.py" || true
             nohup python3 app.py > app.log 2>&1 &
