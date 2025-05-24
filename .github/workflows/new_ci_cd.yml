@@ -47,27 +47,19 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Deploy to staging (same EC2)
-        uses: appleboy/ssh-action@v0.1.7
+      - name: Deploy to staging server via SSH
+        uses: mattdanielz/ssh-deploy@v1.0.0
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          port: 22
-          script: |
-            mkdir -p /home/ubuntu/student_app_staging
-            cd /home/ubuntu/student_app_staging
-            if [ ! -d ".git" ]; then
-              rm -rf * .[^.]* || true
-              git clone https://github.com/ankitanand200193/Student_App_CICD_jenkins.git .
-              git checkout staging
-            else
-              git config pull.rebase false
+            ssh-private-key: ${{ secrets.EC2_KEY }}
+            remote-user: ${{ secrets.EC2_USER }}
+            server-ip: ${{ secrets.EC2_HOST_STAGING }}
+            remote-path: /home/ubuntu/student_app_staging
+            script: |
+              cd /home/ubuntu/student_app_staging
               git pull origin staging
-            fi
-            echo "ANKIT_MONGO_URI='${{ secrets.MONGO_URI }}'" > .env
-            pkill -f "python app.py" || true
-            nohup python3 app.py > app.log 2>&1 &
+              echo "ANKIT_MONGO_URI='${{ secrets.MONGO_URI }}'" > .env
+              pkill -f "python app.py" || true
+              nohup python3 app.py > app.log 2>&1 &
 
   deploy-production:
     needs: build-test
@@ -75,24 +67,17 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Deploy to production (same EC2)
-        uses: appleboy/ssh-action@v0.1.7
+      - name: Deploy to production server via SSH
+        uses: mattdanielz/ssh-deploy@v1.0.0
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          port: 22
-          script: |
-            mkdir -p /home/ubuntu/student_app_production
-            cd /home/ubuntu/student_app_production
-            if [ ! -d ".git" ]; then
-              rm -rf * .[^.]* || true
-              git clone https://github.com/ankitanand200193/Student_App_CICD_jenkins.git .
-              git checkout main
-            else
-              git config pull.rebase false
+            ssh-private-key: ${{ secrets.EC2_KEY }}
+            remote-user: ${{ secrets.EC2_USER }}
+            server-ip: ${{ secrets.EC2_HOST_PRODUCTION }}
+            remote-path: /home/ubuntu/student_app_staging
+            script: |
+              cd /home/ubuntu/student_app_staging
               git pull origin main
-            fi
-            echo "ANKIT_MONGO_URI='${{ secrets.MONGO_URI }}'" > .env
-            pkill -f "python app.py" || true
-            nohup python3 app.py > app.log 2>&1 &
+              echo "ANKIT_MONGO_URI='${{ secrets.MONGO_URI }}'" > .env
+              pkill -f "python app.py" || true
+              nohup python3 app.py > app.log 2>&1 &
+
