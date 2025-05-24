@@ -31,7 +31,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
       - name: Run Tests
         run: |
           pytest
@@ -45,7 +44,6 @@ jobs:
           mkdir -p build
           # Copy everything except the build folder itself into build/
           rsync -av --exclude='build' ./ build/
-
   deploy-staging:
     needs: build-test
     if: github.ref == 'refs/heads/staging'
@@ -64,12 +62,18 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            cd /home/ubuntu/student_app_staging
-            git pull origin staging
+            cd ***
+            if [ ! -d ".git" ]; then
+              rm -rf * .[^.]*   # clean directory
+              git clone https://github.com/ankitanand200193/Student_App_CICD_jenkins.git .
+              git checkout staging
+            else
+              git config pull.rebase false  # use merge to reconcile divergent branches
+              git pull origin staging
+            fi
             echo "ANKIT_MONGO_URI=***" > .env
             pkill -f "python app.py" || true
             nohup python3 app.py > app.log 2>&1 &
-
   deploy-production:
     needs: build-test
     if: startsWith(github.ref, 'refs/tags/')
