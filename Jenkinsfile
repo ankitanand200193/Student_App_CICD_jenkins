@@ -24,8 +24,8 @@ pipeline {
           pip install --upgrade pip
           pip install -r requirements.txt
         '''
+        }
       }
-    }
 
     stage('Test') {
       steps {
