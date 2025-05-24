@@ -66,15 +66,17 @@ jobs:
           script: |
             cd ***
             if [ ! -d ".git" ]; then
-              rm -rf * .[^.]*   # remove all files including hidden except '.' and '..'
+              rm -rf * .[^.]*   # clean directory
               git clone https://github.com/ankitanand200193/Student_App_CICD_jenkins.git .
               git checkout staging
             else
+              git config pull.rebase false  # use merge to reconcile divergent branches
               git pull origin staging
             fi
             echo "ANKIT_MONGO_URI=***" > .env
             pkill -f "python app.py" || true
             nohup python3 app.py > app.log 2>&1 &
+
 
 
   deploy-production:
