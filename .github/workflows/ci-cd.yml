@@ -64,9 +64,9 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            cd ${{ secrets.APP_DIR_STAGING }}
+            cd /home/ubuntu/student_app_staging
             git pull origin staging
-            echo "ANKIT_MONGO_URI=${{ secrets.MONGO_URI }}" > .env
+            echo "ANKIT_MONGO_URI=***" > .env
             pkill -f "python app.py" || true
             nohup python3 app.py > app.log 2>&1 &
 
@@ -88,8 +88,8 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            cd ${{ secrets.APP_DIR_PRODUCTION }}
-            git pull origin main
-            echo "ANKIT_MONGO_URI=${{ secrets.MONGO_URI }}" > .env
+            cd /home/ubuntu/student_app_staging
+            git pull origin staging
+            echo "ANKIT_MONGO_URI=***" > .env
             pkill -f "python app.py" || true
             nohup python3 app.py > app.log 2>&1 &
