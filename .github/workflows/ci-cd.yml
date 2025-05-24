@@ -1,12 +1,15 @@
 name: CI/CD Pipeline
 
-# on:
-#   push:
-#     branches:
-#       - staging
-#   release:
 on:
+  push:
+    branches:
+      - staging
+      - main
+  release:
+    types:
+      - published
   workflow_dispatch:
+
 
 jobs:
   build-test:
