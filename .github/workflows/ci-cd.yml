@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      ANKIT_MONGO_URI: ${{ secrets.ANKIT_MONGO_URI }}
+      ANKIT_MONGO_URI: ${{ secrets.MONGO_URI }}
 
     steps:
       - name: Checkout Code
