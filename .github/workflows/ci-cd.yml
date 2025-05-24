@@ -32,7 +32,11 @@ jobs:
       - name: Run Tests
         run: |
           pytest
-
+      
+      - name: Build Application
+        run: |
+          echo "Build step: Here you can add packaging or Docker build commands"
+          mkdir -p build && cp -r * build/
 
   deploy-staging:
     needs: build-test
