@@ -48,7 +48,7 @@ jobs:
 
     steps:
       - name: Deploy to staging server via SSH
-        uses: mattdanielz/ssh-deploy@v1.0.0
+        uses: appleboy/ssh-action@v0.1.7
         with:
             ssh-private-key: ${{ secrets.EC2_KEY }}
             remote-user: ${{ secrets.EC2_USER }}
@@ -68,7 +68,7 @@ jobs:
 
     steps:
       - name: Deploy to production server via SSH
-        uses: mattdanielz/ssh-deploy@v1.0.0
+        uses: appleboy/ssh-action@v0.1.7
         with:
             ssh-private-key: ${{ secrets.EC2_KEY }}
             remote-user: ${{ secrets.EC2_USER }}
