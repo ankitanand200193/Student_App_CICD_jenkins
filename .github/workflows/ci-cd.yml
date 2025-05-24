@@ -35,8 +35,13 @@ jobs:
       
       - name: Build Application
         run: |
-          echo "Build step: Here you can add packaging or Docker build commands"
-          mkdir -p build && cp -r * build/
+          echo "Build step: Here you can add packaging or build commands"
+          # Clean old build directory if exists
+          rm -rf build
+          # Create fresh build directory
+          mkdir -p build
+          # Copy everything except the build folder itself into build/
+          rsync -av --exclude='build' ./ build/
 
   deploy-staging:
     needs: build-test
