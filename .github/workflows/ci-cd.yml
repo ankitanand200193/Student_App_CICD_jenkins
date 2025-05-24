@@ -5,10 +5,10 @@ on:
     branches:
       - staging
       - main
-  # release:
-  #   types:
-  #     - published
-  # workflow_dispatch:
+  release:
+    types:
+      - published
+  workflow_dispatch:
 
 
 jobs:
