@@ -32,7 +32,7 @@ jobs:
         run: echo "ANKIT_MONGO_URI=${{ secrets.ANKIT_MONGO_URI }}" >> $GITHUB_ENV
 
       - name: Run tests
-        run: pytest test.py
+        run: pytest test_app.py
 
   deploy-staging:
     needs: test
