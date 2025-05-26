@@ -29,7 +29,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Set environment variables
-        run: echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> $GITHUB_ENV
+        run: echo "ANKIT_MONGO_URI=${{ secrets.ANKIT_MONGO_URI }}" >> $GITHUB_ENV
 
       - name: Run tests
         run: pytest test.py
@@ -56,7 +56,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd ~/flaskapp-staging
-            echo "MONGO_URI=${{ secrets.MONGO_URI }}" > .env
+            echo "ANKIT_MONGO_URI=${{ secrets.ANKIT_MONGO_URI }}" > .env
             docker stop flask-container || true
             docker rm flask-container || true
             docker build -t flask-staging .
@@ -84,7 +84,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd ~/flaskapp-prod
-            echo "MONGO_URI=${{ secrets.MONGO_URI }}" > .env
+            echo "ANKIT_MONGO_URI=${{ secrets.ANKIT_MONGO_URI }}" > .env
             docker stop flask-container || true
             docker rm flask-container || true
             docker build -t flask-prod .
