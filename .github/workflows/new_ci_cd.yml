@@ -59,8 +59,9 @@ jobs:
             echo "ANKIT_MONGO_URI=${{ secrets.ANKIT_MONGO_URI }}" > .env
             sudo docker stop flask-container || true
             sudo docker rm flask-container || true
-            sudo docker build -t flask-staging .
-            sudo docker run -d --name flask-container -p 5000:5000 --env-file .env flask-staging
+            # sudo docker build -t flask-staging .
+            sudo docker pull ankit200193/gitactions:01
+            sudo docker run -d --name flask-container -p 5000:5000 --env-file .env ankit200193/gitactions:01
 
   deploy-production:
     needs: test
