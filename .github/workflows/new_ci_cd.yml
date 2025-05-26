@@ -1,83 +1,91 @@
-name: CI/CD Pipeline
+name: Flask CI/CD
 
 on:
   push:
     branches:
-      - staging
       - main
+      - staging
   release:
-    types:
-      - published
-  workflow_dispatch:
+    types: [created]
+
+env:
+  APP_NAME: student-app
 
 jobs:
-  build-test:
-    runs-on: self-hosted
-
-    env:
-      ANKIT_MONGO_URI: ${{ secrets.MONGO_URI }}
-
+  test:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: 3.10
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Tests
-        run: pytest
+      - name: Set environment variables
+        run: echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> $GITHUB_ENV
 
-      - name: Build Application
-        run: |
-          echo "Build step: Add packaging if needed"
-          rm -rf build
-          mkdir -p build
-          rsync -av --exclude='build' ./ build/
+      - name: Run tests
+        run: pytest test.py
 
   deploy-staging:
-    needs: build-test
+    needs: test
     if: github.ref == 'refs/heads/staging'
-    runs-on: self-hosted
-
+    runs-on: ubuntu-latest
     steps:
-      - name: Deploy to staging server via SSH
-        uses: appleboy/ssh-action@v0.1.7
+      - name: Deploy to Staging EC2
+        uses: appleboy/scp-action@v0.1.4
         with:
-            ssh-private-key: ${{ secrets.EC2_KEY }}
-            remote-user: ${{ secrets.EC2_USER }}
-            server-ip: ${{ secrets.EC2_HOST_STAGING }}
-            remote-path: /home/ubuntu/student_app_staging
-            script: |
-              cd /home/ubuntu/student_app_staging
-              git pull origin staging
-              echo "ANKIT_MONGO_URI='${{ secrets.MONGO_URI }}'" > .env
-              pkill -f "python app.py" || true
-              nohup python3 app.py > app.log 2>&1 &
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "."
+          target: "~/flaskapp-staging"
+
+      - name: SSH and Restart Docker (Staging)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd ~/flaskapp-staging
+            echo "MONGO_URI=${{ secrets.MONGO_URI }}" > .env
+            docker stop flask-container || true
+            docker rm flask-container || true
+            docker build -t flask-staging .
+            docker run -d --name flask-container -p 5000:5000 --env-file .env flask-staging
 
   deploy-production:
-    needs: build-test
-    if: startsWith(github.ref, 'refs/tags/')
-    runs-on: self-hosted
-
+    needs: test
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
     steps:
-      - name: Deploy to production server via SSH
-        uses: appleboy/ssh-action@v0.1.7
+      - name: Deploy to Production EC2
+        uses: appleboy/scp-action@v0.1.4
         with:
-            ssh-private-key: ${{ secrets.EC2_KEY }}
-            remote-user: ${{ secrets.EC2_USER }}
-            server-ip: ${{ secrets.EC2_HOST_PRODUCTION }}
-            remote-path: /home/ubuntu/student_app_staging
-            script: |
-              cd /home/ubuntu/student_app_staging
-              git pull origin main
-              echo "ANKIT_MONGO_URI='${{ secrets.MONGO_URI }}'" > .env
-              pkill -f "python app.py" || true
-              nohup python3 app.py > app.log 2>&1 &
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "."
+          target: "~/flaskapp-prod"
 
+      - name: SSH and Restart Docker (Prod)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd ~/flaskapp-prod
+            echo "MONGO_URI=${{ secrets.MONGO_URI }}" > .env
+            docker stop flask-container || true
+            docker rm flask-container || true
+            docker build -t flask-prod .
+            docker run -d --name flask-container -p 5000:5000 --env-file .env flask-prod
