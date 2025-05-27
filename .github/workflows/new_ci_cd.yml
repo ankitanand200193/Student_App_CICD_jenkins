@@ -58,15 +58,32 @@ jobs:
           script: |
             cd ~/flaskapp-staging
             echo "ANKIT_MONGO_URI=${{ secrets.ANKIT_MONGO_URI }}" > .env
-            sudo docker stop flask-container || true
-            sudo docker rm flask-container || true
+            # sudo docker stop flask-container || true
+            # sudo docker rm flask-container || true
             # sudo docker build -t flask-staging .
-            sudo docker pull ankit200193/gitactions:01
-            sudo docker run -d --name flask-container -p 5000:5000 --env-file .env ankit200193/gitactions:01
+            # sudo docker pull ankit200193/gitactions:01
+            # sudo docker run -d --name flask-container -p 5000:5000 --env-file .env ankit200193/gitactions:01
+
+            # Stop the container if it's running
+            if [ "$(sudo docker ps -q -f name=flask-container)" ]; then
+              echo "Stopping flask-container..."
+              sudo docker stop flask-container
+            fi
+            
+            # Start the container if it exists and is not running
+            if [ "$(sudo docker ps -aq -f name=flask-container)" ]; then
+              echo "Starting existing flask-container..."
+              sudo docker start flask-container
+            else
+              echo "flask-container does not exist, creating and starting a new one..."
+              sudo docker pull ankit200193/gitactions:01
+              sudo docker run -d --name flask-container -p 5000:5000 --env-file .env ankit200193/gitactions:01
+            fi
+
 
   deploy-production:
     #needs: test
-    #if: github.event_name == 'release'
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to Production EC2
