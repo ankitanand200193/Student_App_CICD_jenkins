@@ -3,7 +3,6 @@ name: Flask CI/CD
 on:
   push:
     branches:
-      - main
       - staging
   release:
     types: [created]
@@ -86,7 +85,8 @@ jobs:
           script: |
             cd ~/flaskapp-prod
             echo "ANKIT_MONGO_URI=${{ secrets.ANKIT_MONGO_URI }}" > .env
-            docker stop flask-container || true
-            docker rm flask-container || true
-            docker build -t flask-prod .
-            docker run -d --name flask-container -p 5000:5000 --env-file .env flask-prod
+            sudo docker stop flask-container || true
+            sudo docker rm flask-container || true
+            # sudo docker build -t flask-staging .
+            sudo docker pull ankit200193/gitactions:01
+            sudo docker run -d --name flask-container -p 5000:5000 --env-file .env ankit200193/gitactions:01
