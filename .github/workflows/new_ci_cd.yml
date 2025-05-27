@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - staging
-      
   release:
     types: [created]
 
@@ -30,7 +29,7 @@ jobs:
         run: pytest test_app.py
 
       - name: Deploy to Staging
-        if: github.ref == 'refs/heads/staging'
+        # if: github.ref == 'refs/heads/staging'
         env:
           HOST: ${{ secrets.STAGING_HOST }}
           USER: ${{ secrets.STAGING_USER }}
@@ -42,7 +41,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "cd /home/$USER/student_app_staging && nohup python3 app.py > output.log 2>&1 &"
 
       - name: Deploy to Production
-        if: github.event_name == 'release'
+        # if: github.event_name == 'release'
         env:
           HOST: ${{ secrets.PRODUCTION_HOST }}
           USER: ${{ secrets.PRODUCTION_USER }}
