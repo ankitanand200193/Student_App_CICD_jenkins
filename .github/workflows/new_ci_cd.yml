@@ -64,7 +64,7 @@ jobs:
 
   deploy-production:
     needs: test
-    if: github.event_name == 'release'
+    #if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to Production EC2
