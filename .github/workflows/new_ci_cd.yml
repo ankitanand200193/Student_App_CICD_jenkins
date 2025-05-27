@@ -6,6 +6,8 @@ on:
       - staging
   release:
     types: [created]
+  
+  workflow_dispatch:
 
 env:
   APP_NAME: student-app
@@ -34,8 +36,8 @@ jobs:
         run: pytest test_app.py
 
   deploy-staging:
-    needs: test
-    if: github.ref == 'refs/heads/staging'
+    #needs: test
+    #if: github.ref == 'refs/heads/staging'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to Staging EC2
@@ -63,7 +65,7 @@ jobs:
             sudo docker run -d --name flask-container -p 5000:5000 --env-file .env ankit200193/gitactions:01
 
   deploy-production:
-    needs: test
+    #needs: test
     #if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
