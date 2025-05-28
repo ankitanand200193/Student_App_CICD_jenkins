@@ -37,7 +37,7 @@ jobs:
         env:
           HOST: ${{ secrets.STAGING_HOST }}
           USER: ${{ secrets.STAGING_USER }}
-          SSH_KEY: ${{ secrets.EC2_KEY_KEY }}
+          SSH_KEY: ${{ secrets.EC2_KEY }}
         run: |
           echo "$SSH_KEY" > key.pem
           chmod 600 key.pem
@@ -49,7 +49,7 @@ jobs:
         env:
           HOST: ${{ secrets.PRODUCTION_HOST }}
           USER: ${{ secrets.PRODUCTION_USER }}
-          SSH_KEY: ${{ secrets.EC2_KEY_KEY }}
+          SSH_KEY: ${{ secrets.EC2_KEY }}
         run: |
           echo "$SSH_KEY" > key.pem
           chmod 600 key.pem
