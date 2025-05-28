@@ -23,6 +23,8 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          python3 -m venv venv
+          source venv/bin/activate
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
@@ -33,16 +35,16 @@ jobs:
         
 
       - name: Deploy to Staging
-        # if: github.ref == 'refs/heads/staging'
-        env:
-          HOST: ${{ secrets.STAGING_HOST }}
-          USER: ${{ secrets.STAGING_USER }}
-          SSH_KEY: ${{ secrets.EC2_KEY }}
-        run: |
-          echo "$SSH_KEY" > key.pem
-          chmod 600 key.pem
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i key.pem" . $USER@$HOST:/home/$USER/student_app_staging
-          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "cd /home/$USER/student_app_staging && nohup python3 app.py > output.log 2>&1 &"
+          # if: github.ref == 'refs/heads/staging'
+          env:
+            HOST: ${{ secrets.STAGING_HOST }}
+            USER: ${{ secrets.STAGING_USER }}
+            SSH_KEY: ${{ secrets.EC2_KEY }}
+           run: |
+              echo "$SSH_KEY" > key.pem
+              chmod 600 key.pem
+              rsync -avz -e "ssh -o StrictHostKeyChecking=no -i key.pem" . $USER@$HOST:/home/$USER/student_app_prod
+              ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "cd /home/$USER/student_app_prod && nohup python3 app.py > output.log 2>&1 &"
 
       - name: Deploy to Production
         # if: github.event_name == 'release'
