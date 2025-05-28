@@ -1,20 +1,23 @@
-name: CI/CD Pipeline for Flask App
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - staging
       - main
+      - staging
   release:
     types: [created]
 
 jobs:
-  test-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-
+    env:
+      ANKIT_MONGO_URI: ${{ secrets.ANKIT_MONGO_URI }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -23,61 +26,39 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run Tests
-        env:
-          ANKIT_MONGO_URI: ${{ secrets.ANKIT_MONGO_URI }}
-        run: pytest test_app.py
-        
-      - name: Deploy to Staging
-          # if: github.ref == 'refs/heads/staging'
-        env: 
-            HOST: ${{ secrets.STAGING_HOST }}
-            USER: ${{ secrets.STAGING_USER }}
-            SSH_KEY: ${{ secrets.EC2_KEY }}
-
         run: |
-          echo "$SSH_KEY" > key.pem
-          chmod 600 key.pem
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i key.pem" . $USER@$HOST:/home/$USER/student_app_staging
+          pip install pytest
+          pytest
 
-    
-          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST << 'EOF'
-            cd /home/$USER/student_app_staging
-      
-            python3 -m venv venv
-            source venv/bin/activate
-
-            pip install --upgrade pip
-            pip install -r requirements.txt
-
-            nohup venv/bin/python3 app.py > output.log 2>&1 &
-          EOF
-        
-
-      - name: Deploy to Production
-        # if: github.event_name == 'release'
-        env:
-          HOST: ${{ secrets.PRODUCTION_HOST }}
-          USER: ${{ secrets.PRODUCTION_USER }}
-          SSH_KEY: ${{ secrets.EC2_KEY }}
+      - name: Decode SSH Key
         run: |
-          echo "$SSH_KEY" > key.pem
+          echo "${{ secrets.EC2_KEY }}" | base64 --decode > key.pem
           chmod 600 key.pem
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i key.pem" . $USER@$HOST:/home/$USER/student_app_prod
 
-    
-          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST << 'EOF'
-            cd /home/$USER/student_app_prod
-      
-            python3 -m venv venv
+      - name: Deploy to EC2
+        if: github.ref == 'refs/heads/staging' || github.event_name == 'release'
+        run: |
+          HOST=""
+          BRANCH=""
+          if [ "${{ github.ref }}" == "refs/heads/staging" ]; then
+            HOST=${{ secrets.EC2_STAGING_HOST }}
+            BRANCH="staging"
+          elif [ "${{ github.event_name }}" == "release" ]; then
+            HOST=${{ secrets.EC2_PRODUCTION_HOST }}
+            BRANCH="main"
+          fi
+
+          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USER }}@$HOST <<EOF
+            cd GithubActions_FlaskApp
+            git fetch --all
+            git checkout $BRANCH
+            git pull origin $BRANCH
+            echo "ANKIT_MONGO_URI=${{ secrets.ANKIT_MONGO_URI }}" > .env
             source venv/bin/activate
-
-            pip install --upgrade pip
             pip install -r requirements.txt
-
-            nohup venv/bin/python3 app.py > output.log 2>&1 &
+            sudo systemctl restart flaskapp
           EOF
