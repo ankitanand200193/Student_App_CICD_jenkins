@@ -33,14 +33,13 @@ jobs:
           ANKIT_MONGO_URI: ${{ secrets.ANKIT_MONGO_URI }}
         run: pytest test_app.py
         
-
       - name: Deploy to Staging
           # if: github.ref == 'refs/heads/staging'
-          env:
+        env: 
             HOST: ${{ secrets.STAGING_HOST }}
             USER: ${{ secrets.STAGING_USER }}
             SSH_KEY: ${{ secrets.EC2_KEY }}
-           run: |
+        run: |
               echo "$SSH_KEY" > key.pem
               chmod 600 key.pem
               rsync -avz -e "ssh -o StrictHostKeyChecking=no -i key.pem" . $USER@$HOST:/home/$USER/student_app_prod
