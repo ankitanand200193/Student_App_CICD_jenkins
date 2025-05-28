@@ -27,7 +27,10 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Tests
+        env:
+          ANKIT_MONGO_URI: ${{ secrets.ANKIT_MONGO_URI }}
         run: pytest test_app.py
+        
 
       - name: Deploy to Staging
         # if: github.ref == 'refs/heads/staging'
