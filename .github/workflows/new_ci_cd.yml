@@ -68,4 +68,16 @@ jobs:
           echo "$SSH_KEY" > key.pem
           chmod 600 key.pem
           rsync -avz -e "ssh -o StrictHostKeyChecking=no -i key.pem" . $USER@$HOST:/home/$USER/student_app_prod
-          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "cd /home/$USER/student_app_prod && nohup python3 app.py > output.log 2>&1 &"
+
+    
+          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST << 'EOF'
+            cd /home/$USER/student_app_prod
+      
+            python3 -m venv venv
+            source venv/bin/activate
+
+            pip install --upgrade pip
+            pip install -r requirements.txt
+
+            nohup venv/bin/python3 app.py > output.log 2>&1 &
+          EOF
