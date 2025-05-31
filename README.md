@@ -122,7 +122,7 @@ Note : **<your-jenkins-url>** it should not include your pipeline name. **github
 
 ### Jenkins build
 
-![gmail_notifiction](Screenshots/Jenkins_build_success%20%.png)
+![gmail_notifiction](Screenshots/Jenkins_build_success%20.png)
 
 ### App results
 
